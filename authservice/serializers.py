@@ -1,14 +1,15 @@
 from typing import Any, Dict
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+# from django.conf import settings
+from authservice.models import User 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-User = get_user_model
+# User = settings.AUTH_USER_MODEL
 
 class UserSerializer(serializers.ModelSerializer):
-    model=User
-    fields = ['email', 'username', 'first_name', 'last_name', 'date_of_birth', 'gender', 'age', 'bio']
-
+    class Meta:
+        model=User
+        fields = ['email','password', 'username', 'first_name', 'last_name', 'date_of_birth', 'gender', 'age']
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
