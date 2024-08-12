@@ -38,7 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'authservice',
+    'rest_framework',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +58,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'openion.urls'
+
+AUTH_USER_MODEL = 'authservice.User'
 
 TEMPLATES = [
     {
