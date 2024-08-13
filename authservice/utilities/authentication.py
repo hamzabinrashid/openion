@@ -12,7 +12,7 @@ def authenticate(password, username=None, email=None):
         else:
             user = User.objects.get(username=username)
     except User.DoesNotExist:
-        return {'details':'User Does Not Exist'}, status.HTTP_404_NOT_FOUND
+        return {'details':'Invalid Credentials'}, status.HTTP_404_NOT_FOUND
 
     if user.check_password(password):
         tokens = get_token(user)
