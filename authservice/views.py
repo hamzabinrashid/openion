@@ -1,43 +1,56 @@
-from django.shortcuts import render
-from rest_framework import generics,status
+# DjanoRestFramwork
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-# from django.conf import settings
+
+# DJango services
+from django.contrib.auth.hashers import make_password
+from django.shortcuts import get_object_or_404
+
+# First Party
+from authservice.serializers import CustomTokenObtainPairSerializer, UserSerializer
 from authservice.models import User
-from .serializers import CustomTokenObtainPairSerializer, UserSerializer
-from django.contrib.auth import authenticate
-# Create your views here.
-# User= settings.AUTH_USER_MODEL
-# print(User)
+from authservice.utilities.authentication import authenticate, get_token
+import requests
 
 class UserRegistration(generics.CreateAPIView):
-    queryset= User.objects.all()
-    serializer_class=UserSerializer
-    
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
     def post(self, request, *args, **kwargs):
-        serializer=self.get_serializer(data=request.data)
+        request.data['password'] = make_password(request.data['password'])
+        serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        tokens = get_token(user)
         return Response({
-            # "user": UserSerializer(user).data,
+            **tokens,
             "message": "User registered successfully!"
         }, status=status.HTTP_201_CREATED)
 
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-    
+
 
 class UserLogin(APIView):
+    queryset = User.objects.all()
+
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
-        
-        # Authenticate the user
-        user = authenticate(request, email=email, password=password)
-        
+
+        # user = get_object_or_404(User, email=email)
+
+        auth, status = authenticate(email=email, password=password)
+
+        return Response(auth, status=status)
+
+
         if user is not None:
             # Generate JWT token pair
             refresh = RefreshToken.for_user(user)
