@@ -4,17 +4,15 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import RefreshToken
 
 # DJango services
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import get_object_or_404
 
 # First Party
 from authservice.serializers import CustomTokenObtainPairSerializer, UserSerializer
 from authservice.models import User
 from authservice.utilities.authentication import authenticate, get_token
-import requests
+
 
 class UserRegistration(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -49,14 +47,3 @@ class UserLogin(APIView):
         auth, status = authenticate(email=email, password=password)
 
         return Response(auth, status=status)
-
-
-        if user is not None:
-            # Generate JWT token pair
-            refresh = RefreshToken.for_user(user)
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token),
-            }, status=status.HTTP_200_OK)
-        else:
-            return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

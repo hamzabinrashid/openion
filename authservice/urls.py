@@ -1,6 +1,5 @@
-from django.contrib import admin
-from django.urls import path, include
-from .views import UserRegistration,CustomTokenObtainPairView,UserLogin
+from django.urls import path
+from authservice.views import UserRegistration,CustomTokenObtainPairView,UserLogin
 
 urlpatterns = [
     path('register/',UserRegistration.as_view(), name='register'),
